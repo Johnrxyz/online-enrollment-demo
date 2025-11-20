@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <h1>Student Section</h1>
+            <div>
+                <label for="firstName">First Name</label>
+                {{ studentForm.firstName }}
+            </div>
+            <div>
+                <label for="lastName">First Name</label>
+                {{ studentForm.lastName }}
+            </div>
+            <div>
+                <label for="email">Email</label>
+                {{ studentForm.email }}
+            </div>
+            <div>
+                <label for="gender">Gender</label>
+                {{ studentForm.gender }}
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    </div>
+{% endblock %}

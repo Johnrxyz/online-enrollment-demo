@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1>HELLO FROM DASHBOARD NIGGA</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+
+    {% if studentInfo %}
+        <p>{{ studentInfo.firstName }} {{studentInfo.lastName }}</p>
+        <p>{{ studentInfo.email }}</p>
+        <p>{{ studentInfo.gender }}</p>
+
+        <a href="{% url 'edit' %}">Edit Information</a>
+    {% else %}
+        <p>No record yet, add record <a href="{% url 'add_student' %}">here.</a></p>
+    {% endif %}
+
+    <a href="{% url 'logout' %}">LOG OUT</a>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <h1>Student Section</h1>
+            <div>
+                <label for="firstName">First Name</label>
+                {{ studentForm.firstName }}
+            </div>
+            <div>
+                <label for="lastName">First Name</label>
+                {{ studentForm.lastName }}
+            </div>
+            <div>
+                <label for="email">Email</label>
+                {{ studentForm.email }}
+            </div>
+            <div>
+                <label for="gender">Gender</label>
+                {{ studentForm.gender }}
+            </div>
+
+            <!-- <h1>Course Section</h1>
+            <div>
+                <label for="course_id">Course ID</label>
+                {{ courseForm.course_id }}
+            </div>
+            <div>
+                <label for="course_code">Course Code</label>
+                {{ courseForm.course_code }}
+            </div>
+            <div>
+                <label for="course_title">Course Title</label>
+                {{ courseForm.course_title }}
+            </div>
+            <div>
+                <label for="unit">Unit</label>
+                {{ courseForm.unit }}
+            </div>
+            <div>
+                <label for="is_active">Active Course?</label>
+                {{ courseForm.is_active }}
+            </div>
+
+            <h1>Section</h1>
+            <div>
+                <label for="section_id">Section ID</label>
+                {{ sectionForm.section_id }}
+            </div>
+            <div>
+                <label for="start_end_time">Start and End TIme</label>
+                {{ sectionForm.start_end_time }}
+            </div>
+            <div>
+                <label for="days_of_week">Days Of Week</label>
+                {{ sectionForm.days_of_week }}
+            </div>
+            <div>
+                <label for="room_number">Room Number</label>
+                {{ sectionForm.room_number }}
+            </div>
+            <div>
+                <label for="instructor">instructor</label>
+                {{ sectionForm.instructor }}
+            </div> -->
+
+            <button type="submit">ADD</button>
+    </div>
+
+        </form>
+{% endblock %}
