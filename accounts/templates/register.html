@@ -1,27 +1,202 @@
 {% extends 'base.html' %}
 
+{% block title %}Teacher Registration{% endblock %}
+
 {% block content %}
-<div>
-    <form method="POST">
-        {% csrf_token %}
-        {% if messages %}
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
+<style>
+    :root {
+        --dark-bg: #1A2633;
+        --teal-dark: #2F7C7A;
+        --teal-light: #4A9C9B;
+        --gray-dark: #6C7A89;
+        --input-bg: #263340; 
+        --white: #F8F9FA;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; 
+        padding: 40px 5%;
+    }
+
+    .page-container {
+        width: 100%;
+        max-width: 450px; 
+        text-align: center;
+    }
+
+    .form-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .form-title .highlight {
+        color: var(--teal-light);
+    }
+    .form-subtitle {
+        font-size: 1.1em;
+        font-weight: 400;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+
+    .registration-form {
+        width: 100%;
+        text-align: left;
+        margin-top: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--white);
+    }
+
+    .registration-form input[type="text"],
+    .registration-form input[type="email"],
+    .registration-form input[type="password"],
+    .registration-form select {
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--gray-dark);
+        background-color: var(--input-bg);
+        color: var(--white);
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+
+    .registration-form select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F8F9FA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 1em;
+        cursor: pointer;
+    }
+
+    .btn {
+        display: block;
+        padding: 18px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        color: var(--white);
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .btn-primary { background-color: var(--teal-dark); }
+    .btn-primary:hover { background-color: var(--teal-light); }
+
+    .register-btn {
+        width: 100%;
+        margin-top: 30px;
+    }
+
+    .login-link-container {
+        margin-top: 20px;
+        font-size: 1em;
+        text-align: center;
+    }
+    .login-link {
+        color: var(--teal-light);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .login-link:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 600px) {
+        .page-container {
+            max-width: 90%;
+        }
+        .form-title {
+            font-size: 2em;
+        }
+        .form-subtitle {
+            font-size: 1em;
+        }
+        .btn {
+            padding: 15px 20px;
+            font-size: 1em;
+        }
+    }
+</style>
+
+<div class="main-content">
+    <div class="page-container">
+        <h2 class="form-title"><span class="highlight">Student</span> Registration</h2>
+        <p class="form-subtitle">Create your student account</p>
+
+        {% if form.non_field_errors %}
+        <div class="message-container">
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-times-circle"></i> Please correct the following errors:
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
         {% endif %}
 
-        <label for="email">Email</label>
-        {{ form.email }}
-        <label for="username">Username</label>
-        {{ form.username }}
-        <label for="password1">Password</label>
-        {{ form.password1 }}
-        <label for="password2">Confirm Password</label>
-        {{ form.password2 }}
+        <form method="post" class="registration-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form.email }}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
 
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">login</a> here</p>
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+            </div>
+            {% if messages %}
+                <div class="message-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+            <button type="submit" class="btn btn-primary register-btn">Register</button>
+        </form>
+
+        <div class="login-link-container">
+            Already have an account? <a href="{% url 'studentLogin' %}" class="login-link">Log in here</a>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Profile{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --dark-bg: #1A2633; 
+        --card-bg: #1F2E3A; 
+        --teal-highlight: #4A9C9B; 
+        --text-color: #F8F9FA; 
+        --light-text: #B0B9C2; 
+        --border-color: #334455; 
+        --button-hover-dark: #2F7C7A;
+    }
+
+    
+    h1, h2, h3, h4, h5, h6, p {
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        padding: 20px; 
+        box-sizing: border-box;
+    }
+
+    .profile-content-wrapper {
+        width: 100%;
+        max-width: 100%;
+        padding: 50px;
+    }
+    .profile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px; 
+        padding-bottom: 20px; 
+        border-bottom: 1px solid var(--border-color); 
+    }
+
+    .profile-details {
+        display: flex;
+        align-items: center;
+    }
+
+    .profile-picture {
+        width: 100px; 
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--teal-highlight); 
+        margin-right: 15px; 
+        overflow: hidden; 
+        font-size:1.5rem;
+        font-weight:700;
+        flex-shrink:0;
+        display:flex;
+        align-items:center;
+        justify-content:center; 
+    }
+
+    .profile-picture img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-name h2 {
+        font-size: 1.6em; 
+        font-weight: 700;
+        color: var(--text-color);
+        line-height: 1.2;
+    }
+
+    .profile-name p {
+        font-size: 0.9em; 
+        color: var(--light-text);
+    }
+
+    .edit-button {
+        background-color: var(--teal-highlight);
+        color: var(--text-color);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px; 
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 0.9em;
+        text-decoration: none   ;
+    }
+    .edit-button:hover {
+        background-color: var(--button-hover-dark);
+    }
+
+    .info-card {
+        background-color: var(--card-bg);
+        border-radius: 8px; 
+        padding: 20px 25px;
+        margin-bottom: 25px; 
+    }
+
+    .info-card h3 {
+        font-size: 1.15em;
+        font-weight: 600;
+        color: var(--teal-highlight);
+        margin-bottom: 20px; 
+    }
+
+    .personal-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+        gap: 20px 30px; 
+    }
+
+    .info-item {
+        line-height: 1.4;
+    }
+    .info-item span.label {
+        display: block;
+        font-size: 0.9em; 
+        color: var(--light-text);
+        margin-bottom: 2px;
+    }
+    .info-item span.value {
+        display: block;
+        font-size: 1em; 
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+
+
+    .table-wrapper {
+        overflow-x: auto; 
+        border-radius: 8px;
+    }
+
+    .academic-table {
+        width: 100%;
+        border-collapse: collapse; 
+        text-align: left;
+        min-width: 600px; 
+    }
+
+    .academic-table th, .academic-table td {
+        padding: 12px 15px; 
+        font-size: 0.9em;
+        border-bottom: 1px solid var(--border-color); 
+    }
+
+    .academic-table th {
+        background-color: var(--teal-highlight);
+        color: var(--text-color);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .academic-table th:first-child { border-top-left-radius: 8px; }
+    .academic-table th:last-child { border-top-right-radius: 8px; }
+
+
+    .academic-table tbody tr {
+        background-color: var(--card-bg); 
+    }
+    .academic-table tbody tr:last-child td {
+        border-bottom: none; 
+    }
+    .academic-table tbody tr:hover {
+        background-color: rgba(74, 156, 155, 0.1); 
+    }
+    .academic-table td {
+        color: var(--text-color);
+    }
+
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 25px; 
+    }
+
+    .pagination {
+        display: flex;
+        gap: 8px; 
+    }
+
+    .page-num-btn, .page-arrow-btn {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        padding: 8px 14px; 
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        font-size: 0.9em;
+        min-width: 35px; 
+        text-align: center;
+    }
+
+    .page-num-btn:hover, .page-arrow-btn:hover {
+        background-color: #263340;
+        border-color: var(--teal-highlight);
+    }
+
+    .page-num-btn.active {
+        background-color: var(--teal-highlight);
+        border-color: var(--teal-highlight);
+        color: var(--text-color);
+    }
+    .page-num-btn.active:hover {
+        background-color: var(--button-hover-dark);
+        border-color: var(--button-hover-dark);
+    }
+
+    .footer-logout-button {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 0.9em;
+    }
+    .footer-logout-button:hover {
+        background-color: #263340;
+    }
+
+    .no-data-message {
+        background-color: var(--card-bg);
+        padding: 40px;
+        border-radius: 8px;
+        text-align: center;
+        color: var(--light-text);
+        font-size: 1.1em;
+        margin-top: 25px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+        .profile-details {
+            margin-bottom: 15px;
+            width: 100%; 
+        }
+        .profile-name h2 {
+            font-size: 1.4em;
+        }
+        .edit-button {
+            align-self: flex-end; 
+            margin-top: 10px;
+        }
+        .info-card {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .personal-info-grid {
+            grid-template-columns: 1fr; 
+            gap: 15px;
+        }
+        .academic-table th, .academic-table td {
+            padding: 10px 12px;
+            font-size: 0.85em;
+        }
+        .table-footer {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .pagination {
+            justify-content: center;
+            flex-wrap: wrap; 
+        }
+        .footer-logout-button {
+            width: 100%;
+            max-width: 200px; 
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .profile-name h2 {
+            font-size: 1.2em;
+        }
+        .profile-name p {
+            font-size: 0.8em;
+        }
+        .edit-button {
+            padding: 8px 15px;
+            font-size: 0.8em;
+        }
+        .info-card h3 {
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        .info-item span.label, .info-item span.value {
+            font-size: 0.85em;
+        }
+        .academic-table th, .academic-table td {
+            padding: 8px 10px;
+            font-size: 0.8em;
+        }
+        .page-num-btn, .page-arrow-btn {
+            padding: 6px 10px;
+            font-size: 0.8em;
+            min-width: 30px;
+        }
+        .no-data-message {
+            padding: 30px;
+            font-size: 1em;
+        }
+    }
+
+</style>
+
+<div class="main-content">
+    <div class="profile-content-wrapper">
+        {% if messages %}
+                <div class="message-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+        <div class="profile-header">
+            <div class="profile-details">
+                <div class="profile-picture">        
+                    {% if studentInfo.profile %}
+                        <img src="{{studentInfo.profile.url}}" alt="Profile Picture">
+                    {% else %}
+                        <div class="avatar">
+                            {{ studentInfo.lastName|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile-name">
+                    <h2>{{ studentInfo.lastName }}, {{ studentInfo.firstName }}</h2>
+                    <p>Full Name</p>
+                </div>
+            </div>
+            <a class="edit-button" href="{% url 'edit' %}">Edit Information</a>
+        </div>
+
+        <div class="info-card">
+            <h3>Personal Information</h3>
+
+            {% if studentInfo %}
+            <div class="personal-info-grid">
+                <div class="info-item">
+                    <span class="label">Student ID</span>
+                    <span class="value">{{ studentInfo.studentIdentifier }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email</span>
+                    <span class="value">{{ studentInfo.email }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Status</span>
+                    <span class="value">PENDING</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Age</span>
+                    <span class="value">{{studentInfo.age}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Sex</span>
+                    <span class="value">{{studentInfo.gender}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Department</span>
+                    <span class="value">{{ studentInfo.department}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Address</span>
+                    <span class="value">{{studentInfo.address}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Enrollment Date</span>
+                    <span class="value">{{ studentInfo.enrollmentDate }}</span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="no-data-message">
+                    <p>No information yet, <a href="{% url 'add_student' %}" style="color: white;">enroll</a> to add.</p>
+                    <!-- <p>No information yet, add here.</p> -->
+                </div>
+        {% endif %}
+        
+        
+        <div class="academic-records-section">
+            <div class="info-card"> <h3>Academic Records</h3>
+                {% if studentInfo %}
+                <div class="table-wrapper">
+                    <table class="academic-table">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Title</th>
+                                <th>Unit</th>
+                                <th>Grade</th>
+                                <th>Semester</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>ITCS</td><td>Intro to Programming</td><td>4</td><td>A+</td><td>1st</td><td>Passed</td></tr>
+                            <tr><td>CS101</td><td>Computer Science</td><td>4</td><td>B</td><td>2nd</td><td>Ongoing</td></tr>
+                            <tr><td>PathFit</td><td>Physical Fitness</td><td>3</td><td>C-</td><td>1st</td><td>Failed</td></tr>
+                            <tr><td>ITCS</td><td>Intro to Programming</td><td>4</td><td>A+</td><td>1st</td><td>Passed</td></tr>
+                            <tr><td>CS101</td><td>Computer Science</td><td>4</td><td>B</td><td>2nd</td><td>Ongoing</td></tr>
+                            <tr><td>ITCS</td><td>Intro to Programming</td><td>4</td><td>A+</td><td>1st</td><td>Passed</td></tr>
+                            <tr><td>CS101</td><td>Computer Science</td><td>4</td><td>B</td><td>2nd</td><td>Ongoing</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <button class="footer-logout-button">Log Out</button>
+                </div>
+            {% else %}
+                    <div class="no-data-message">
+                    <p>No information yet, <a href="{% url 'add_student' %}" style="color: white;">enroll</a> to add.</p>
+                    <!-- <p>No information yet, add here.</p> -->
+                </div>
+            {% endif %}
+
+
+            </div> </div> </div> </div> {% endblock %}

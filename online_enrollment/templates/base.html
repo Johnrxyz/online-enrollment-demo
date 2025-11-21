@@ -3,12 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{% block title %}RES Enrollment System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-    <h1>Online Enrollment</h1>
 
-    {% block content %}
-    {% endblock %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    .message-container {
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 0.95em;
+        font-weight: 500;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .alert i {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+
+    .alert-danger {
+        background-color: #4C2424; 
+        border: 1px solid #C0392B; 
+        color: var(--white); 
+    }
+
+    .alert-warning {
+        background-color: #4C4024; 
+        border: 1px solid var(--status-pending); 
+        color: var(--white);
+    }
+
+    .alert-success {
+        background-color: #2D4C24; 
+        border: 1px solid var(--status-enrolled); 
+        color: var(--white);
+    }
+
+    .alert ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .alert ul li {
+        margin-bottom: 3px;
+    }
+
+    :root {
+        --dark-blue: #1A2633;
+        --darker-blue: #141C24; 
+        --teal-dark: #2F7C7A;
+        --teal-light: #4A9C9B;
+        --gray-dark: #6C7A89;
+        --white: #F8F9FA;
+        --text-subtle: #96A3B1;
+        --sidebar-width: 250px;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--dark-blue);
+        color: var(--white);
+        display: flex;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+        min-width: var(--sidebar-width);
+        background-color: var(--darker-blue);
+        color: var(--white);
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+    
+    .logo-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 50px;
+    }
+    
+    .logo-box {
+        background-color: var(--teal-dark);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        font-size: 1.2em;
+        margin-right: 10px;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .logo-text {
+        font-size: 1em;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .nav-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-item {
+        margin-bottom: 5px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        color: var(--text-subtle);
+        text-decoration: none;
+        font-size: 0.95em;
+        font-weight: 400;
+        border-radius: 8px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background-color: var(--dark-blue);
+        color: var(--white);
+    }
+
+    .nav-link i {
+        margin-right: 15px;
+        font-size: 1.1em;
+        color: var(--teal-light);
+    }
+
+    .nav-link.active i {
+        color: var(--white);
+    }
+    
+    .quick-actions {
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 30px; 
+    }
+
+    .quick-actions p {
+        font-size: 0.9em;
+        font-weight: 600;
+        color: var(--text-subtle);
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+
+    .quick-actions .quickAction {
+        margin-bottom: 10px;
+    }
+
+    .quickAction {
+        display: block;
+        width: 90%;
+        padding: 12px 15px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-decoration: none; 
+        color: var(--white);
+        text-align: center;
+    }
+
+    .quickAction-primary {
+        background-color: var(--teal-dark);
+    }
+
+    .quickAction-primary:hover {
+        background-color: var(--teal-light);
+        transform: translateY(-1px);
+    }
+
+    .quickAction-secondary {
+        background-color: var(--gray-dark);
+    }
+
+    .quickAction-secondary:hover {
+        background-color: #8391A1;
+        transform: translateY(-1px);
+    }
+
+    .main-wrapper {
+        flex-grow: 1;
+        margin-left: var(--sidebar-width); 
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .content-block {
+        background-color: var(--darker-blue);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .content-block h2 {
+        font-size: 1.8em;
+        font-weight: 600;
+        margin-top: 0;
+        border-bottom: 2px solid var(--teal-dark);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .content-block p {
+        color: var(--text-subtle);
+        line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+        .sidebar {
+            width: 100%;
+            height: 60px;
+            position: relative;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-section {
+             margin-bottom: 0; 
+        }
+        
+        .nav-menu, .quick-actions {
+            display: none;
+        }
+        
+        .main-wrapper {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .content-block {
+            padding: 20px;
+        }
+        
+        .content-block h2 {
+            font-size: 1.5em;
+        }
+    }
+</style>
+
+<body>
+    <div class="sidebar">
+        <div class="logo-section">
+            <div class="logo-box">RES</div>
+            <div class="logo-text">RONJERICK<br>ENROLLMENT SYSTEM</div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'profile' %}" class="nav-link">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'studentList' %}" class="nav-link">
+                    <i class="fas fa-user-graduate"></i> Students List
+                </a>
+            </li>
+        </ul>
+        
+        <div class="quick-actions">
+            <p>QUICK ACTIONS</p>
+            <a href="{% url 'add_student' %}" class="quickAction quickAction-primary">Enroll Now!</a>
+
+
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="quickAction quickAction-secondary">Log Out</a>
+            {% else %}
+                <a href="{% url 'studentLogin' %}" class="quickAction quickAction-secondary">Log In</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <main class="main-wrapper">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname;
+
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                
+                if (linkHref === currentPath || (linkHref.endsWith('/') && linkHref.slice(0, -1) === currentPath)) {
+                    navLinks.forEach(l => l.classList.remove('active')); 
+                    
+                    link.classList.add('active'); 
+                }
+            });
+        });
+    </script>
 </body>
 </html>

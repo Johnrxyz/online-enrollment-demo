@@ -1,73 +1,431 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}Enroll New Student{% endblock %}
 
 {% block content %}
-    <div>
-        <form method="POST">
-            {% csrf_token %}
-            <h1>Student Section</h1>
-            <div>
-                <label for="firstName">First Name</label>
-                {{ studentForm.firstName }}
-            </div>
-            <div>
-                <label for="lastName">First Name</label>
-                {{ studentForm.lastName }}
-            </div>
-            <div>
-                <label for="email">Email</label>
-                {{ studentForm.email }}
-            </div>
-            <div>
-                <label for="gender">Gender</label>
-                {{ studentForm.gender }}
-            </div>
+<style>
+    :root {
+        --darker-blue: #141C24;
+        --teal-dark: #2F7C7A;
+        --teal-light: #4A9C9B;
+        --white: #F8F9FA;
+        --text-subtle: #96A3B1;
+        --border-color: #334455;
+        --input-bg: #263340;
+        --form-input-color: #fff; 
+    }
 
-            <!-- <h1>Course Section</h1>
-            <div>
-                <label for="course_id">Course ID</label>
-                {{ courseForm.course_id }}
-            </div>
-            <div>
-                <label for="course_code">Course Code</label>
-                {{ courseForm.course_code }}
-            </div>
-            <div>
-                <label for="course_title">Course Title</label>
-                {{ courseForm.course_title }}
-            </div>
-            <div>
-                <label for="unit">Unit</label>
-                {{ courseForm.unit }}
-            </div>
-            <div>
-                <label for="is_active">Active Course?</label>
-                {{ courseForm.is_active }}
-            </div>
+    .form-container {
+        margin: 0 auto;
+        padding: 50px;
+    }
 
-            <h1>Section</h1>
-            <div>
-                <label for="section_id">Section ID</label>
-                {{ sectionForm.section_id }}
-            </div>
-            <div>
-                <label for="start_end_time">Start and End TIme</label>
-                {{ sectionForm.start_end_time }}
-            </div>
-            <div>
-                <label for="days_of_week">Days Of Week</label>
-                {{ sectionForm.days_of_week }}
-            </div>
-            <div>
-                <label for="room_number">Room Number</label>
-                {{ sectionForm.room_number }}
-            </div>
-            <div>
-                <label for="instructor">instructor</label>
-                {{ sectionForm.instructor }}
-            </div> -->
+    .form-card {
+        background-color: var(--darker-blue);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        margin-bottom: 25px;
+    }
 
-            <button type="submit">ADD</button>
-    </div>
+    .section-header {
+        font-size: 1.5em;
+        font-weight: 600;
+        color: var(--white);
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-        </form>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        position: relative; 
+    }
+
+    .form-group label {
+        color: var(--text-subtle);
+        font-size: 0.9em;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+    
+    .form-grid input,
+    .form-grid textarea,
+    .form-grid select {
+        padding: 12px 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background-color: var(--input-bg);
+        color: var(--white);
+        font-size: 1em;
+        outline: none;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-grid input:focus,
+    .form-grid select:focus {
+        border-color: var(--teal-light);
+    }
+    
+    .form-grid select {
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%2396A3B1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 10px;
+    }
+
+
+    #datePicker {
+        display: flex;
+        gap: 1rem;
+        position: absolute; 
+        z-index: 99;
+        right: 0;
+        width: 350px; 
+        
+        background-color: var(--darker-blue); 
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        
+        clip-path: circle(0% at 100% 0%);
+        transition: clip-path 0.7s;
+        
+        cursor: grab;
+    }
+    
+    #date {
+        width: 100%;
+        max-width: 100%;
+        text-align: left;
+        background: var(--input-bg);
+        color: var(--white);
+        border: 1px solid var(--border-color);
+        padding: 12px 15px;
+        border-radius: 6px;
+        font-size: 1em;
+        height: auto; 
+    }
+
+    #date > div:first-child {
+        color: var(--white);
+    }
+
+    #date input[type="checkbox"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin:0;
+        border: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        z-index: 100; 
+        background: transparent !important;
+    }
+
+    .future{
+        color: red;
+        font-size: 0.9em; 
+        font-weight: 700;
+    }
+
+    #date input:checked ~ #datePicker {
+        clip-path: circle(150% at 100% 100%);
+    }
+
+    #datePicker svg {
+        overflow: visible;
+        width: 100%;
+        height: auto;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin-top: 30px;
+        background-color: var(--teal-dark);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--teal-light);
+        transform: translateY(-1px);
+    }
+    .no-data-message {
+        background-color: var(--card-bg);
+        padding: 40px;
+        border-radius: 8px;
+        text-align: center;
+        color: var(--light-text);
+        font-size: 1.1em;
+        margin-top: 25px;
+        line-height: 1.6;
+    }
+    @media (max-width: 600px) {
+        .form-card {
+            padding: 20px;
+        }
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        #datePicker {
+            width: 90vw; 
+        }
+    }
+</style>
+
+<div class="form-container">
+        {{ studentForm.studentIdentifier.errors }}
+        {{ studentForm.firstName.errors }}
+        {{ studentForm.lastName.errors }}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if studentInfo %}
+            <div class="no-data-message">
+                    <p>Youre already enrolled, view your profile <a href="{% url 'studentLogin' %}" style="color: white;">here</a></p>
+                </div>
+        {% else %}
+        <div class="form-card">
+            <h2 class="section-header">Student Information</h2>
+            
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="id_firstName">First Name</label>
+                    {{ studentForm.firstName }}
+                </div>
+                <div class="form-group">
+                    <label for="id_lastName">Last Name</label>
+                    {{ studentForm.lastName }}
+                </div>
+                
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <button id="date" type="button">
+                        <div>DD/MM/YYYY</div>
+                        
+                        <input type="checkbox">
+                        
+                        <div id="datePicker">
+                            <svg viewBox="0 0 350 166" >
+                                <ellipse id="ellipse" cx="175" cy="83" rx="150" ry="73"
+                                style="fill-opacity: 0;stroke:var(--teal-light);stroke-width:0.5" />
+                                <image id="earth" height="15" width="15" href="{% static 'online_enrollment/earth.png' %}"></image>
+                                <image id="sun" x="105" y="68" height="30" width="30" href="{% static 'online_enrollment/sun.png' %}"></image>
+                            </svg>
+                        </div>
+                    </button>
+                    <input type="hidden" name="date_of_birth" id="hidden_dob_input"> </div>
+
+                <div class="form-group">
+                    <label for="studentIdentifier">Student ID</label>
+                    {{ studentForm.studentIdentifier }}
+                </div>
+                <div class="form-group">
+                    <label for="profile">Upload Profile Photo</label>
+                    {{ studentForm.profile }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email">Email</label>
+                    {{ studentForm.email }}
+                </div>
+                <div class="form-group">
+                    <label for="id_gender">Gender</label>
+                    {{ studentForm.gender }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_department">Department</label>
+                    {{ studentForm.department }}
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    {{ studentForm.age }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    {{ studentForm.address }}
+                </div>
+                
+                
+
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2 class="section-header">Academic Record</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="id_total_units_earned">Total Units Earned</label>
+                    {{ academicRecordForm.total_units_earned }}
+                </div>
+                <div class="form-group">
+                    <label for="id_gpa">GPA</label>
+                    {{ academicRecordForm.gpa }}
+                </div>
+                
+                <div class="form-group" style="grid-column: span 1;">
+                    <label for="id_graduation_date">Expected Graduation Date</label>
+                    {{ academicRecordForm.graduation_date }}
+                </div>
+                <div></div>
+            </div>
+        </div>
+        
+        
+        <button type="submit" class="submit-btn">Enroll</button>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+    "use strict"
+
+    const earth = document.getElementById("earth");
+    const dateButton = document.getElementById("date");
+    const datePicker = document.getElementById("datePicker");
+    const ellipse = document.getElementById("ellipse");
+    const hiddenDobInput = document.getElementById("hidden_dob_input"); // Added hidden input
+
+    const earthSize = 15;
+    const horizontalRadius = 150;
+    const verticalRadius = 73;
+    const horizontalMargin = 25;
+    const verticalMargin = 10;
+    
+    var isPressing = false;
+    var today = new Date();
+    var year = today.getFullYear();
+    const oneDay = 1000 * 60 * 60 * 24;
+
+    function isLeapyear(y) {
+        return (y % 100 === 0) ? (y % 400 === 0) : (y % 4 === 0);
+    }
+    
+    function dateFromDay(day, y) {
+        var date = new Date(y, 0);
+        return new Date(date.setDate(day));
+    }
+
+    function addZero(num) {
+        return num < 10 ? "0" + num : num;
+    }
+
+    function updateDateDisplay(date) {
+        const displayDiv = dateButton.children[0];
+        const yearToCheck = date.getFullYear();
+
+        if (date.getTime() > today.getTime() || yearToCheck > today.getFullYear()) {
+            displayDiv.classList.add("future");
+            displayDiv.innerText = "you aint a time traveler {{ request.user.username }}, nice try";
+        } else {
+            displayDiv.classList.remove("future");
+            const formattedDate = addZero(date.getDate()) + "/" + addZero(date.getMonth() + 1) + "/" + yearToCheck;
+            displayDiv.innerText = formattedDate;
+            
+            const isoDate = yearToCheck + "-" + addZero(date.getMonth() + 1) + "-" + addZero(date.getDate());
+            hiddenDobInput.value = isoDate; 
+        }
+    }
+
+    var start = new Date(today.getFullYear(), 0, 0);
+    var diff = today - start;
+    var dayNumber = Math.floor(diff / oneDay);
+    var date = dateFromDay(dayNumber, year);
+
+    updateDateDisplay(date);
+
+    var daysInYear = 365 + (isLeapyear(year) ? 1 : 0);
+    var arcLength = dayNumber / daysInYear; 
+    var degree = 2 * Math.asin(arcLength * 2 - 1); 
+
+    var x = horizontalRadius * Math.cos(degree);
+    var y = verticalRadius * Math.sin(degree);
+
+    earth.setAttribute("x", horizontalRadius + x - earthSize / 2 + horizontalMargin);
+    earth.setAttribute("y", verticalRadius - y - earthSize / 2 + verticalMargin);
+
+
+    datePicker.addEventListener("mousedown", mousedown);
+    datePicker.addEventListener("touchstart", mousedown);
+
+    document.addEventListener("mousemove", mousemove);
+    document.addEventListener("touchmove", mousemove);
+
+    document.addEventListener("mouseup", mouseup);
+    document.addEventListener("touchend", mouseup);
+
+    function mousedown(e) {
+        isPressing = true;
+    }
+
+    function mousemove(e) {
+        if (!isPressing)
+            return;
+
+        const { clientX, clientY } = e.touches != null ? e.touches[0] : e;
+
+        const rect = ellipse.getBoundingClientRect();
+        
+        const svgElement = ellipse.parentElement;
+        const svgRect = svgElement.getBoundingClientRect();
+        
+        const ellipseCenterX = svgRect.x + svgRect.width / 2;
+        const ellipseCenterY = svgRect.y + svgRect.height / 2;
+
+        degree = Math.atan2(ellipseCenterY - clientY, clientX - ellipseCenterX);
+
+        let x = horizontalRadius * Math.cos(degree);
+        let y = verticalRadius * Math.sin(degree);
+
+        earth.setAttribute("x", horizontalRadius + x - earthSize / 2 + horizontalMargin);
+        earth.setAttribute("y", verticalRadius - y - earthSize / 2 + verticalMargin);
+
+        let oldDate = date;
+
+        const daysInCurrentYear = 365 + (isLeapyear(year) ? 1 : 0);
+        // The original formula: 2 * Math.asin(((dayNumber-1)/(182.5 + (isLeapyear()?0.5:0)))-1)
+        // Inverse calculation: 
+        // sin(degree/2) = ((dayNumber-1) / daysInHalfYear) - 1 => (dayNumber-1) = daysInHalfYear * (sin(degree/2) + 1)
+        var dayNumberFloat = (daysInCurrentYear / 2) * (Math.sin(degree / 2) + 1) + 1;
+        
+        let newDate = dateFromDay(Math.floor(dayNumberFloat), year);
+
+        if (oldDate.getMonth() === 0 && oldDate.getDate() === 1 && newDate.getMonth() === 11 && newDate.getDate() === 31) {
+            year--;
+        } else if (oldDate.getMonth() === 11 && oldDate.getDate() === 31 && newDate.getMonth() === 0 && newDate.getDate() === 1) {
+            year++;
+        }
+        
+        date = dateFromDay(Math.floor(dayNumberFloat), year);
+        
+        updateDateDisplay(date);
+    }
+
+    function mouseup(e) {
+        isPressing = false;
+    }
+</script>
 {% endblock %}

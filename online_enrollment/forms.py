@@ -9,8 +9,13 @@ class StudentForm(forms.ModelForm):
 
         widgets = {
             'email': forms.EmailInput(attrs={'placeholder': 'Enter student email'}),
+            'firstName': forms.TextInput(attrs={'placeholder': 'e.g. Ronjerick'}),
+            'lastName': forms.TextInput(attrs={'placeholder': 'e.g. Gamba'}),
+            'age': forms.TextInput(attrs={'placeholder': 'e.g. 27'}),
+            'address': forms.TextInput(attrs={'placeholder': 'e.g. Dalahican Desert'}),
+            'studentIdentifier': forms.TextInput(attrs={'placeholder': 'e.g. 023A-10900'}),
         } 
-
+   
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
@@ -37,4 +42,6 @@ class AcademicRecordForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'graduation_date': forms.DateInput(attrs={'type': 'date'}),
+            'total_units_earned': forms.TextInput(attrs={'placeholder': 'e.g. 3.0'}),
+            'gpa': forms.TextInput(attrs={'placeholder': 'e.g. 1'}),
         }

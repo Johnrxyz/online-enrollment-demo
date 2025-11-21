@@ -1,26 +1,245 @@
 {% extends 'base.html' %}
 
+{% block title %}Student Login{% endblock %}
+
 {% block content %}
-<div>
-    <h1>LOG IN</h1>
+<style>
+    :root {
+        --dark-bg: #1A2633;
+        --teal-dark: #2F7C7A;
+        --teal-light: #4A9C9B;
+        --gray-dark: #6C7A89;
+        --input-bg: #263340; 
+        --white: #F8F9FA;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--dark-bg);
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 5%;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 90%;
+    }
+    .logo-section { display: flex; align-items: center; }
+    .logo-box {
+        background-color: var(--teal-dark);
+        width: 40px; height: 40px;
+        display: flex; justify-content: center; align-items: center;
+        font-weight: 700; font-size: 1.2em; margin-right: 10px;
+    }
+    .logo-text { font-size: 0.9em; line-height: 1.2; }
+    .nav-link { color: var(--white); text-decoration: none; font-weight: 600; }
+
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; 
+        padding: 40px 5%;
+    }
+
+    .page-container {
+        width: 100%;
+        max-width: 450px; 
+        text-align: center;
+    }
+
+    .form-title {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .form-title .highlight {
+        color: var(--teal-light);
+    }
+    .form-subtitle {
+        font-size: 1.1em;
+        font-weight: 400;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+
+    .login-form {
+        width: 100%;
+        text-align: left;
+        margin-top: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.9em;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--white);
+    }
+
     
-    {% if messages %}
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
-    {% endif %}
+    .login-form input[type="text"], 
+    .login-form input[type="password"],
+    .login-form select {
+        width: 100%;
+        padding: 18px; 
+        border-radius: 10px; 
+        border: 1px solid var(--gray-dark);
+        background-color: var(--input-bg);
+        color: var(--white);
+        box-sizing: border-box;
+        font-size: 1.1em; 
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .login-form input:focus,
+    .login-form select:focus {
+        outline: none;
+        border-color: var(--teal-light); 
+        box-shadow: 0 0 0 3px rgba(74, 156, 155, 0.3);
+    }
 
-    <form method="POST">
-        {% csrf_token %}
-        <label for="username">Username</label>
-        {{ form.username }}
 
-        <label for="password">Password</label>
-        {{ form.password }}
+    .login-form select {
+        appearance: none; 
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F8F9FA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 18px center; 
+        background-size: 1em;
+        cursor: pointer;
+    }
 
-        <button type="submit">Log In</button>
-    </form>
-    <p>Don't have an account? <a href="{% url 'register' %}">register</a> here</p>
-</div>
+    .btn {
+        display: block;
+        padding: 18px 25px;
+        border: none;
+        border-radius: 10px; 
+        font-size: 1.1em;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        color: var(--white);
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .btn-primary { 
+        background-color: var(--teal-dark); 
+        box-shadow: 0 4px 10px rgba(47, 124, 122, 0.4); 
+    }
+    .btn-primary:hover { 
+        background-color: var(--teal-light); 
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(47, 124, 122, 0.6);
+    }
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(47, 124, 122, 0.4);
+    }
+
+    .login-btn {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .signup-link {
+        margin-top: 30px;
+        font-size: 1em;
+    }
+    .signup-link .link {
+        color: var(--teal-light);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .signup-link .link:hover {
+        text-decoration: underline;
+    }
+    
+    /* --- Responsiveness --- */
+    @media (max-width: 600px) {
+        .page-container {
+            max-width: 90%;
+        }
+        .form-title {
+            font-size: 2em;
+        }
+        .form-subtitle {
+            font-size: 1em;
+        }
+        .btn {
+            padding: 16px 20px;
+            font-size: 1em;
+        }
+        .login-form input,
+        .login-form select {
+            padding: 16px; 
+            font-size: 1em;
+        }
+    }
+</style>
+<body>
+    <main class="main-content">
+        <div class="page-container">
+            <h2 class="form-title"><span class="highlight">Student</span> Login</h2> 
+            <p class="form-subtitle">Log in to your student account</p>
+
+            <form method="post" action="{% url 'studentLogin' %}" class="login-form">
+                {% csrf_token %} 
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}">Password</label>
+                    {{ form.password }}
+                </div>
+
+                {% if messages %}
+                <div class="message-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary login-btn">Log in</button>
+                
+                {% if form.non_field_errors %}
+                    <div class="message-container">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-times-circle"></i> Please correct the following errors:
+                            <ul>
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+            </form>
+
+            <p class="signup-link">Don't have account? <a href="{% url 'studentRegister' %}" class="link">Create one here</a></p>
+        </div>
+    </main>
 
 {% endblock %}

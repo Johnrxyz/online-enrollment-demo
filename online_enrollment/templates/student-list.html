@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}All Students{% endblock %}
+{% load static %}
+{% block content %}
+<style>
+    .students-page-wrapper {
+        padding: 0 50px;
+    }
+    :root {
+        --dark-blue: #1A2633;
+        --darker-blue: #141C24;
+        --teal-light: #4A9C9B;
+        --teal-dark: #2F7C7A;
+        --white: #F8F9FA;
+        --text-subtle: #96A3B1;
+        --border-color: #334455;
+        --input-bg: #263340;
+        --status-pending: #F39C12;
+        --status-enrolled: #2ECC71;
+    }
+
+    /* --- Page Header / Control Bar --- */
+    .students-header {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--white);
+        margin: 0;
+        margin-bottom: 25px;
+        /* padding-bottom: 15px; */
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .control-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    /* Search Input Group */
+    .search-group {
+        position: relative;
+        flex-grow: 1;
+        max-width: 400px;
+    }
+
+    .search-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-subtle);
+        font-size: 1.1em;
+    }
+
+    .search-group input {
+        width: 100%;
+        padding: 12px 12px 12px 45px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--input-bg);
+        color: var(--white);
+        box-sizing: border-box;
+        font-size: 1em;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-group input:focus {
+        border-color: var(--teal-light);
+    }
+
+    /* Filter Dropdown */
+    .filter-group {
+        flex-grow: 1;
+        max-width: fit-content;
+        position: relative;
+    }
+
+    .filter-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--input-bg);
+        color: var(--white);
+        font-size: 1em;
+        box-sizing: border-box;
+        appearance: none; /* Remove default arrow */
+        outline: none;
+    }
+
+    /* Custom select arrow (Requires Font Awesome) */
+    .filter-group::after {
+        content: '\f0d7'; 
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        color: var(--teal-light);
+        pointer-events: none;
+        font-size: 0.8em;
+    }
+
+    /* New Student Button */
+    .new-student-btn {
+        padding: 12px 20px;
+        background-color: var(--teal-light);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        white-space: nowrap; /* Prevent wrapping */
+    }
+
+    .new-student-btn:hover {
+        background-color: var(--teal-dark);
+    }
+    
+    .new-student-btn i {
+        margin-right: 8px;
+    }
+
+    /* --- Student Table --- */
+    .student-profile-thumbnail {
+        width: 30px; 
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover; 
+        margin-right: 10px;
+        vertical-align: middle; 
+        border: 2px solid var(--teal-light); 
+    }
+
+    .student-table-container {
+        background-color: var(--darker-blue); 
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        margin-bottom: 20px;
+    }
+    
+    .student-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .student-list-table th, .student-list-table td {
+        padding: 15px;
+        font-size: 0.9em;
+    }
+
+    .student-list-table thead {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .student-list-table th {
+        color: var(--text-subtle);
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .student-list-table td {
+        color: var(--white);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .student-list-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .status-pending {
+        color: var(--status-pending);
+        font-weight: 600;
+    }
+    .status-enrolled {
+        color: var(--status-enrolled);
+        font-weight: 600;
+    }
+
+    /* --- Pagination --- */
+    .pagination-container {
+        background-color: var(--darker-blue); 
+        padding: 20px 25px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .pagination-container a {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 35px;
+        height: 35px;
+        margin: 0 5px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--white);
+        background-color: var(--input-bg);
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+    
+    .pagination-container a:hover,
+    .pagination-container a.active {
+        background-color: var(--teal-light);
+    }
+    
+    .pagination-container a.arrow {
+        width: 40px;
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 900px) {
+        .control-bar {
+            flex-direction: column;
+        }
+        .search-group, .filter-group {
+            max-width: 100%;
+        }
+        .new-student-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    @media (max-width: 600px) {
+        .student-table-container {
+            padding: 15px;
+        }
+        .student-list-table th, .student-list-table td {
+            padding: 10px;
+            font-size: 0.85em;
+        }
+    }
+</style>
+
+<div class="students-page-wrapper">
+    
+    <h3 class="students-header">ALL STUDENTS</h3>
+
+    <div class="control-bar">
+        <div class="search-group">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search name or ID">
+        </div>
+
+        <div class="filter-group">
+            <select>
+                <option selected>Bachelor of Science in Information Technology</option>
+                <option>Bachelor of Science in Education</option>
+                <option>Bachelor of Arts in English</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="student-table-container">
+        <div class="table-wrapper">
+            {% if allStudent %}
+                <table class="student-list-table"> 
+                    
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student</th>
+                            <th>Department</th>
+                            <th>Enrollment Date</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody id="student-list-tbody"> 
+                    {% for student in allStudent %}
+                        <tr>
+                            <td>{{ student.studentIdentifier }}</td>
+                            <td>
+                                {% if student.profile %}
+                                    <img src="{{ student.profile.url }}" alt="{{ student.firstName }} Profile" class="student-profile-thumbnail">
+                                {% else %}
+                                    <img src="{% static 'online_enrollment/68725145_114887523201271_7701318507136286720_n.jpg' %}" alt="Default Profile" class="student-profile-thumbnail">
+                                {% endif %}
+                                {{ student.firstName }} {{student.lastName}}
+                            </td>
+                            <td>{{ student.department }}</td>
+                            <td>{{student.enrollmentDate}}</td>
+                            <td class="status-pending">{{student.email}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                
+                </table>
+            
+            {% else %}
+                <p>No student found, <a href="#" style="color: var(--teal-light);">enroll</a> to add.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

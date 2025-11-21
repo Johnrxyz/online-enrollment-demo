@@ -5,14 +5,23 @@ from .forms import StudentForm, CourseForm, SectionForm, EnrollmentForm, Academi
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-@login_required(login_url='login')
+@login_required(login_url='studentLogin')
 def addStudent(request):
+    try:
+        studentInfo = Student.objects.get(student = request.user)
+    except Student.DoesNotExist:
+        studentInfo = None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        studentInfo = None
+
     if request.method == "POST":
-        studentForm = StudentForm(request.POST)
+        print('Method is post')
+        studentForm = StudentForm(request.POST, request.FILES)
         # courseForm = CourseForm()
         # sectionForm = SectionForm()
         # enrollmentForm = EnrollmentForm()
-        # academicRecordForm = AcademicRecordForm()
+        academicRecordForm = AcademicRecordForm(request.POST)
 
         if studentForm.is_valid():
             studInstance = studentForm.save(commit=False)
@@ -25,33 +34,67 @@ def addStudent(request):
         else:
             print(studentForm.errors)
     else:
+        print('not post')
         studentForm = StudentForm()
+        academicRecordForm = AcademicRecordForm()
 
     return render(request, 'addnew.html', {'studentForm' : studentForm,
-                                        #    'courseForm': courseForm,
+                                            'studentInfo': studentInfo,
                                         #    'sectionForm': sectionForm,
                                         #    'enrollmentForm': enrollmentForm,
-                                        #    'academicRecordForm':academicRecordForm
+                                           'academicRecordForm':academicRecordForm
                                            })
 
-@login_required(login_url='login')
+# @login_required(login_url='studentLogin')
 def dashboard(request):
+    allStudent = Student.objects.all()
+    try:
+        studentInfo = Student.objects.get(student = request.user.is_authenticated)
+    except Student.DoesNotExist:
+        studentInfo = None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        studentInfo = None
+
+    context = {
+        'studentInfo': studentInfo,
+        'allStudent':allStudent,
+        'studentCount':  allStudent.count(),
+        'pendingEnrollmentCount': Enrollment.objects.filter(status='P').count(),
+        'activeCourseCount': Course.objects.filter(is_active=True).count(),
+    }   
+    return render(request, 'dashboard.html',context)
+
+@login_required(login_url='studentLogin')
+def profile(request):
     try:
         studentInfo = Student.objects.get(student = request.user)
-    except:
-        studentInfo = False
+    except Student.DoesNotExist:
+        studentInfo = None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        studentInfo = None
 
     context = {
         'studentInfo' : studentInfo
     }
-    return render(request, 'dashboard.html', context)
+    
+    return render(request, 'profile.html', context)
 
-@login_required(login_url='login')
+
+@login_required(login_url='studentLogin')
 def editInfo(request):
-    user = Student.objects.get(student = request.user)
+    try:
+        user = Student.objects.get(student = request.user)
+    except Student.DoesNotExist:
+        user = None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        user = None
+
     if request.method == "POST":
         print('naka psot nigga')
-        studentForm = StudentForm(request.POST, instance=user)
+        studentForm = StudentForm(request.POST, request.FILES, instance=user)
         if studentForm.is_valid():
 
             studInstance = studentForm.save(commit=False)
@@ -59,7 +102,7 @@ def editInfo(request):
             studInstance.save()
 
             messages.success(request, 'Edit successful')
-            return redirect('dashboard')
+            return redirect('profile')
         
         else:
             messages.error(request, 'Error, Please check your entries')
@@ -69,6 +112,12 @@ def editInfo(request):
         studentForm = StudentForm(instance=user)
 
     context = {
-        'studentForm': studentForm
+        'studentForm': studentForm,
+        'user': user
     }
     return render(request, 'editInfo.html', context)
+
+
+def studentList(request):
+    allStudent = Student.objects.all()
+    return render(request, 'student-list.html', {'allStudent':allStudent})
