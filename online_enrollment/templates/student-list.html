@@ -284,12 +284,14 @@
                         <tr>
                             <td>{{ student.studentIdentifier }}</td>
                             <td>
-                                {% if student.profile %}
-                                    <img src="{{ student.profile.url }}" alt="{{ student.firstName }} Profile" class="student-profile-thumbnail">
-                                {% else %}
-                                    <img src="{% static 'online_enrollment/68725145_114887523201271_7701318507136286720_n.jpg' %}" alt="Default Profile" class="student-profile-thumbnail">
-                                {% endif %}
-                                {{ student.firstName }} {{student.lastName}}
+                                <a href="{% url 'otherProfile' student.studentIdentifier %}" style="color: white; text-decoration: none;">
+                                    {% if student.profile %}
+                                        <img src="{{ student.profile.url }}" alt="{{ student.firstName }} Profile" class="student-profile-thumbnail">
+                                    {% else %}
+                                        <img src="{% static 'online_enrollment/68725145_114887523201271_7701318507136286720_n.jpg' %}" alt="Default Profile" class="student-profile-thumbnail">
+                                    {% endif %}
+                                    {{ student.firstName }} {{student.lastName}}
+                                </a>
                             </td>
                             <td>{{ student.department }}</td>
                             <td>{{student.enrollmentDate}}</td>

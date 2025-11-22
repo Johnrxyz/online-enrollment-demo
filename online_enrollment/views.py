@@ -81,6 +81,21 @@ def profile(request):
     
     return render(request, 'profile.html', context)
 
+def otherProfile(request, studentIdentifier):
+    try:
+        studentInfo = Student.objects.get(studentIdentifier = studentIdentifier )
+    except Student.DoesNotExist:
+        studentInfo = None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        studentInfo = None
+
+    context = {
+        'studentInfo' : studentInfo
+    }
+    
+    return render(request, 'otherProfile.html', context)
+
 
 @login_required(login_url='studentLogin')
 def editInfo(request):

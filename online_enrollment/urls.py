@@ -6,5 +6,6 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('edit/', views.editInfo, name='edit'),
     path('profile/', views.profile, name='profile'),
+    path('other-profile/<slug:studentIdentifier>/', views.otherProfile, name='otherProfile'),
     path('student-list/', views.studentList, name='studentList'),
 ]

@@ -170,6 +170,13 @@
         text-decoration: underline;
     }
     
+    .forgot {
+        display: flex;
+        justify-content: flex-end;
+    }
+    .forgot a {
+        color: white;
+    }
     /* --- Responsiveness --- */
     @media (max-width: 600px) {
         .page-container {
@@ -209,6 +216,10 @@
                 <div class="form-group">
                     <label for="{{ form.password.id_for_label }}">Password</label>
                     {{ form.password }}
+                </div>
+
+                <div class="forgot">
+                    <a href="{% url 'password_reset' %}">Forgot password?</a>
                 </div>
 
                 {% if messages %}
