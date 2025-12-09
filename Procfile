@@ -1,1 +1,1 @@
-web: gunicorn enrollment.wsgi --log-file -
+web: python manage.py migrate && gunicorn enrollment.wsgi --log-file -
