@@ -1,0 +1,5 @@
+STATIC_ROOT/
+.migrations/
+venv/
+env/
+__pycache__/
