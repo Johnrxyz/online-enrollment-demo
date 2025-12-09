@@ -145,7 +145,15 @@ CLOUDINARY_STORAGE = {
 }
 
 if os.environ.get('CLOUDINARY_API_KEY'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' # Keep for backward compatibility if needed
 
 
 # Default primary key field type
