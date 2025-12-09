@@ -2,4 +2,5 @@ STATIC_ROOT/
 .migrations/
 venv/
 env/
+.env
 __pycache__/
